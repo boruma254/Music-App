@@ -11,7 +11,16 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://music-app-swart-three.vercel.app",
+      "music-app.railway.internal",
+    ],
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 // ===== DATABASE CONNECTION =====
