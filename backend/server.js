@@ -41,7 +41,7 @@ app.post("/api/auth/register", async (req, res) => {
     // Check if user exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ error: "User already exists" });
+      return res.status(400).json({ error: "Email already exists" });
     }
 
     // Hash password
@@ -78,7 +78,9 @@ app.post("/api/auth/login", async (req, res) => {
 
     // Validation
     if (!email || !password) {
-      return res.status(400).json({ error: "Email and password required" });
+      return res
+        .status(400)
+        .json({ error: "Email and password required" });
     }
 
     // Find user
@@ -133,7 +135,7 @@ app.get("/api/playlists", async (req, res) => {
 app.get("/api/playlists/:id", async (req, res) => {
   try {
     const playlist = await Playlist.findById(req.params.id).populate(
-      "trackIds",
+      "trackIds"
     );
     if (!playlist) {
       return res.status(404).json({ error: "Playlist not found" });
@@ -181,7 +183,7 @@ app.post("/api/playlists/:id/tracks", async (req, res) => {
     const playlist = await Playlist.findByIdAndUpdate(
       req.params.id,
       { $push: { trackIds: trackId } },
-      { new: true },
+      { new: true }
     ).populate("trackIds");
 
     if (!playlist) {
@@ -276,10 +278,10 @@ app.listen(PORT, () => {
   console.log(`\n📋 Available endpoints:`);
   console.log(`   Auth:`);
   console.log(
-    `     POST http://localhost:${PORT}/api/auth/register (email, password, name)`,
+    `     POST http://localhost:${PORT}/api/auth/register (email, password, name)`
   );
   console.log(
-    `     POST http://localhost:${PORT}/api/auth/login (email, password)`,
+    `     POST http://localhost:${PORT}/api/auth/login (email, password)`
   );
   console.log(`     POST http://localhost:${PORT}/api/auth/logout`);
   console.log(`   Data:`);
@@ -287,5 +289,5 @@ app.listen(PORT, () => {
   console.log(`     GET http://localhost:${PORT}/api/tracks`);
   console.log(`     GET http://localhost:${PORT}/api/albums`);
   console.log(`     GET http://localhost:${PORT}/api/artists`);
-  console.log(`\n💡 To seed database: npm run seed`);
+  console.log(`\n💡 MongoDB is enabled. To seed database: npm run seed`);
 });

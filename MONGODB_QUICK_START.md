@@ -5,11 +5,13 @@
 ### 1. Choose Your Database
 
 **Option A: MongoDB Atlas (Cloud) - Easiest**
+
 - Free forever (shared cluster)
 - No installation needed
 - Automatic backups
 
 **Option B: Local MongoDB**
+
 - Full control
 - Faster for development
 - Requires installation
@@ -17,6 +19,7 @@
 ### 2. Setup (Choose One)
 
 #### Atlas
+
 ```bash
 # 1. Create account at https://www.mongodb.com/cloud/atlas
 # 2. Create free cluster M0
@@ -32,6 +35,7 @@ cd backend && npm run seed
 ```
 
 #### Local
+
 ```bash
 # 1. Download MongoDB Community at https://www.mongodb.com/try/download/community
 # 2. Install (defaults to Windows service)
@@ -59,6 +63,7 @@ npm run dev
 ### 4. Login
 
 **Demo Credentials (after seeding):**
+
 - Email: `demo@example.com`
 - Password: `demo123`
 
@@ -71,6 +76,7 @@ npm run seed
 ```
 
 Creates:
+
 - ✅ 5 Artists
 - ✅ 5 Albums
 - ✅ 6 Tracks
@@ -78,6 +84,7 @@ Creates:
 - ✅ 3 Playlists
 
 Expected output:
+
 ```
 ✅ MongoDB connection successful
 ✅ Created 5 artists
@@ -94,6 +101,7 @@ Expected output:
 ## API Endpoints
 
 ### Register
+
 ```bash
 curl -X POST http://localhost:3001/api/auth/register \
   -H "Content-Type: application/json" \
@@ -101,6 +109,7 @@ curl -X POST http://localhost:3001/api/auth/register \
 ```
 
 ### Login
+
 ```bash
 curl -X POST http://localhost:3001/api/auth/login \
   -H "Content-Type: application/json" \
@@ -108,16 +117,19 @@ curl -X POST http://localhost:3001/api/auth/login \
 ```
 
 ### Get Playlists
+
 ```bash
 curl "http://localhost:3001/api/playlists?userId=USER_ID"
 ```
 
 ### Get All Tracks
+
 ```bash
 curl "http://localhost:3001/api/tracks"
 ```
 
 ### Health Check
+
 ```bash
 curl "http://localhost:3001/api/health"
 ```
@@ -126,12 +138,12 @@ curl "http://localhost:3001/api/health"
 
 ## Troubleshooting
 
-| Error | Solution |
-|-------|----------|
-| **ECONNREFUSED** | Is MongoDB running? Atlas: Check IP whitelist & credentials. Local: Start mongod service. |
-| **E11000 duplicate key** | Email already exists. Use different email. |
-| **No data after seed** | Run `npm run seed` again. Check backend logs. |
-| **Login fails silently** | Kill node processes. Restart backend. Clear browser cache. |
+| Error                    | Solution                                                                                  |
+| ------------------------ | ----------------------------------------------------------------------------------------- |
+| **ECONNREFUSED**         | Is MongoDB running? Atlas: Check IP whitelist & credentials. Local: Start mongod service. |
+| **E11000 duplicate key** | Email already exists. Use different email.                                                |
+| **No data after seed**   | Run `npm run seed` again. Check backend logs.                                             |
+| **Login fails silently** | Kill node processes. Restart backend. Clear browser cache.                                |
 
 ---
 
