@@ -8,12 +8,16 @@ interface AudioPlayerProps {
   currentTime: number;
   duration: number;
   volume: number;
+  shuffle: boolean;
+  repeatMode: "off" | "one" | "all";
   onPlay: () => void;
   onPause: () => void;
   onNext: () => void;
   onPrevious: () => void;
   onSeek: (time: number) => void;
   onVolumeChange: (volume: number) => void;
+  onToggleShuffle: () => void;
+  onCycleRepeatMode: () => void;
 }
 
 export default function AudioPlayer({
@@ -22,12 +26,16 @@ export default function AudioPlayer({
   currentTime,
   duration,
   volume,
+  shuffle,
+  repeatMode,
   onPlay,
   onPause,
   onNext,
   onPrevious,
   onSeek,
   onVolumeChange,
+  onToggleShuffle,
+  onCycleRepeatMode,
 }: AudioPlayerProps) {
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
 
@@ -76,6 +84,17 @@ export default function AudioPlayer({
 
         {/* Controls */}
         <div className="flex items-center gap-6 mx-6">
+          {/* Shuffle */}
+          <button
+            onClick={onToggleShuffle}
+            className={`transition ${shuffle ? "text-purple-300" : "text-gray-400 hover:text-white"}`}
+            title={shuffle ? "Shuffle on" : "Shuffle off"}
+          >
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M16 3h5v5h-2V6.41l-3.29 3.3-1.42-1.42 3.3-3.29H16V3zM3 6h5.59l4.7 4.7-1.42 1.42L7.17 8H3V6zm0 10h5.59l4.7-4.7 1.42 1.42-4.7 4.7H3v-2zm18 1.59V16h-1.59l-3.3-3.29 1.42-1.42 3.29 3.3V12H21v5h-5v-2h1.59z" />
+            </svg>
+          </button>
+
           {/* Previous */}
           <button
             onClick={onPrevious}
@@ -123,6 +142,30 @@ export default function AudioPlayer({
               <path d="M13.7 2.841A1.5 1.5 0 0016 4.11V15.89a1.5 1.5 0 01-2.3 1.269l-9.344-5.89a1.5 1.5 0 010-2.538l9.344-5.89z" />
               <path d="M5.5 2a.5.5 0 00-.5.5v15a.5.5 0 001 0V2.5a.5.5 0 00-.5-.5z" />
             </svg>
+          </button>
+
+          {/* Repeat */}
+          <button
+            onClick={onCycleRepeatMode}
+            className={`transition ${repeatMode !== "off" ? "text-purple-300" : "text-gray-400 hover:text-white"}`}
+            title={
+              repeatMode === "all"
+                ? "Repeat all"
+                : repeatMode === "one"
+                  ? "Repeat one"
+                  : "Repeat off"
+            }
+          >
+            <div className="relative">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M7 7h11v3l4-4-4-4v3H6a4 4 0 00-4 4v3h2V9a2 2 0 012-2zm10 10H6v-3l-4 4 4 4v-3h12a4 4 0 004-4v-3h-2v3a2 2 0 01-2 2z" />
+              </svg>
+              {repeatMode === "one" && (
+                <span className="absolute -top-1 -right-2 text-[10px] font-bold text-purple-200">
+                  1
+                </span>
+              )}
+            </div>
           </button>
         </div>
 

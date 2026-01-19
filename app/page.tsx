@@ -65,12 +65,16 @@ export default function Home() {
         currentTime={audioPlayer.currentTime}
         duration={audioPlayer.duration}
         volume={audioPlayer.volume}
+        shuffle={audioPlayer.shuffle}
+        repeatMode={audioPlayer.repeatMode}
         onPlay={audioPlayer.resume}
         onPause={audioPlayer.pause}
         onNext={audioPlayer.playNext}
         onPrevious={audioPlayer.playPrevious}
         onSeek={audioPlayer.seek}
         onVolumeChange={audioPlayer.setVolume}
+        onToggleShuffle={audioPlayer.toggleShuffle}
+        onCycleRepeatMode={audioPlayer.cycleRepeatMode}
       />
     </div>
   );
