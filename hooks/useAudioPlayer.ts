@@ -69,8 +69,8 @@ export const useAudioPlayer = () => {
       currentTrackIndex: trackIndex,
     }));
 
-    // Use a mock audio URL - replace with real audio paths
-    audio.src = `data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA==`;
+    // Use the actual track URL from the database
+    audio.src = track.url || "";
     audio.play().catch((err) => console.log("Playback error:", err));
   };
 
