@@ -37,13 +37,16 @@ class SpotifyService {
    */
   async getAccessToken(code) {
     try {
-      const response = await axios.post(SPOTIFY_AUTH_BASE, null, {
-        params: {
-          grant_type: "authorization_code",
-          code,
-          redirect_uri: this.redirectUri,
-          client_id: this.clientId,
-          client_secret: this.clientSecret,
+      const params = new URLSearchParams();
+      params.append("grant_type", "authorization_code");
+      params.append("code", code);
+      params.append("redirect_uri", this.redirectUri);
+      params.append("client_id", this.clientId);
+      params.append("client_secret", this.clientSecret);
+
+      const response = await axios.post(SPOTIFY_AUTH_BASE, params, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
         },
       });
 
@@ -63,12 +66,15 @@ class SpotifyService {
    */
   async refreshAccessToken(refreshToken) {
     try {
-      const response = await axios.post(SPOTIFY_AUTH_BASE, null, {
-        params: {
-          grant_type: "refresh_token",
-          refresh_token: refreshToken,
-          client_id: this.clientId,
-          client_secret: this.clientSecret,
+      const params = new URLSearchParams();
+      params.append("grant_type", "refresh_token");
+      params.append("refresh_token", refreshToken);
+      params.append("client_id", this.clientId);
+      params.append("client_secret", this.clientSecret);
+
+      const response = await axios.post(SPOTIFY_AUTH_BASE, params, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
         },
       });
 

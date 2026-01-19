@@ -1,4 +1,4 @@
-const express = require("express");
+  const express = require("express");
 const router = express.Router();
 const SpotifyService = require("../services/spotifyService");
 
@@ -19,6 +19,11 @@ const userTokens = {};
  */
 router.get("/auth-url", (req, res) => {
   try {
+    if (!process.env.SPOTIFY_CLIENT_ID || !process.env.SPOTIFY_CLIENT_SECRET) {
+      return res.status(500).json({ 
+        error: "Spotify credentials not configured. Please set SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET in .env.local" 
+      });
+    }
     const authUrl = spotifyService.getAuthorizationUrl();
     res.json({ authUrl });
   } catch (error) {
@@ -32,6 +37,10 @@ router.get("/auth-url", (req, res) => {
  */
 router.post("/callback", async (req, res) => {
   const { code, userId } = req.body;
+
+  if (!code) {
+    return res.status(400).json({ error: "Authorization code required" });
+  }
 
   try {
     const tokens = await spotifyService.getAccessToken(code);
@@ -47,7 +56,11 @@ router.post("/callback", async (req, res) => {
       refreshToken: tokens.refreshToken,
     });
   } catch (error) {
-    res.status(500).json({ error: "Failed to authenticate with Spotify" });
+    console.error("Spotify callback error:", error.response?.data || error.message);
+    res.status(500).json({ 
+      error: "Failed to authenticate with Spotify",
+      details: error.response?.data?.error_description || error.message 
+    });
   }
 });
 
