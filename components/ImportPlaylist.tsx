@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function ImportPlaylist() {
   const [jsonText, setJsonText] = useState("");
@@ -8,8 +9,17 @@ export default function ImportPlaylist() {
   const [userId, setUserId] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const router = useRouter();
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
+  // Auto-populate userId from localStorage if user is logged in
+  useEffect(() => {
+    const stored = localStorage.getItem("currentUserId");
+    if (stored) {
+      setUserId(stored);
+    }
+  }, []);
 
   const importFromJson = async () => {
     setMessage(null);
@@ -53,8 +63,12 @@ export default function ImportPlaylist() {
           data.name +
           " (" +
           data.trackIds.length +
-          " tracks)",
+          " tracks) — redirecting...",
       );
+      // Redirect to home after 2 seconds
+      setTimeout(() => {
+        router.push("/");
+      }, 2000);
     } catch (err: any) {
       setMessage(err.message || "Import failed");
     } finally {

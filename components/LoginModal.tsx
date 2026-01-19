@@ -26,6 +26,9 @@ export default function LoginModal({ onLogin }: LoginModalProps) {
 
     try {
       const user = await authService.login(email, password);
+      // Store user ID in localStorage for import page
+      localStorage.setItem("currentUserId", user.id);
+      localStorage.setItem("currentUserName", user.name);
       onLogin(user.name);
     } catch (err: any) {
       setError(err.message || "Login failed. Please try again.");
@@ -61,6 +64,10 @@ export default function LoginModal({ onLogin }: LoginModalProps) {
     try {
       const user = await authService.register(email, password, name);
       setSuccess("Account created successfully! You can now login.");
+
+      // Also store the new user ID
+      localStorage.setItem("currentUserId", user.id);
+      localStorage.setItem("currentUserName", user.name);
 
       // Clear form
       setEmail("");
