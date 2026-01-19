@@ -22,7 +22,7 @@ export default function LoginModal({ onLogin }: LoginModalProps) {
   // Check for Spotify callback on mount
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get("code");
+    const code = urlParams.get("code") || urlParams.get("spotify_code");
     const error = urlParams.get("error");
 
     if (error) {

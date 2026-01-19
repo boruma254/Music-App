@@ -1,5 +1,11 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
+// Load .env.local from project root (for Next.js compatibility)
+require("dotenv").config({ path: path.resolve(__dirname, "../.env.local") });
+// Also try regular .env as fallback
+require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
+// And backend/.env as final fallback
 require("dotenv").config();
 const bcrypt = require("bcryptjs");
 const connectDB = require("./db");
@@ -357,5 +363,18 @@ app.listen(PORT, () => {
   console.log(`     GET http://localhost:${PORT}/api/tracks`);
   console.log(`     GET http://localhost:${PORT}/api/albums`);
   console.log(`     GET http://localhost:${PORT}/api/artists`);
+  console.log(`   Spotify:`);
+  console.log(`     GET http://localhost:${PORT}/api/spotify/auth-url`);
+  console.log(`     POST http://localhost:${PORT}/api/spotify/callback`);
+  console.log(`     GET http://localhost:${PORT}/api/spotify/playlists`);
+  
+  // Check Spotify configuration
+  if (process.env.SPOTIFY_CLIENT_ID && process.env.SPOTIFY_CLIENT_SECRET) {
+    console.log(`\n✅ Spotify API configured`);
+  } else {
+    console.log(`\n⚠️  Spotify API not configured`);
+    console.log(`   Add SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET to .env.local`);
+  }
+  
   console.log(`\n💡 MongoDB is enabled. To seed database: npm run seed`);
 });
