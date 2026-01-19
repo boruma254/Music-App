@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 interface SidebarProps {
   activeTab: string;
@@ -56,6 +57,14 @@ export default function Sidebar({
             <span>{tab.label}</span>
           </button>
         ))}
+
+        {/* Import Button */}
+        <Link href="/import">
+          <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-900 hover:text-white transition mt-4 border-t border-gray-800 pt-4">
+            <span className="text-xl">📥</span>
+            <span>Import Playlist</span>
+          </button>
+        </Link>
       </nav>
 
       {/* User Menu */}

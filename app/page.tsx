@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import MainContent from "@/components/MainContent";
 import LoginModal from "@/components/LoginModal";
@@ -12,6 +12,16 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("home");
   const [userName, setUserName] = useState("");
   const audioPlayer = useAudioPlayer();
+
+  // Restore user session on mount
+  useEffect(() => {
+    const storedUserId = localStorage.getItem("currentUserId");
+    const storedUserName = localStorage.getItem("currentUserName");
+    if (storedUserId && storedUserName) {
+      setUserName(storedUserName);
+      setIsLoggedIn(true);
+    }
+  }, []);
 
   const handleLogin = (name: string) => {
     setUserName(name);
