@@ -204,6 +204,67 @@ app.post("/api/playlists/:id/tracks", async (req, res) => {
   }
 });
 
+// Import an external playlist (creates tracks if needed)
+app.post("/api/playlists/import", async (req, res) => {
+  try {
+    const {
+      name,
+      description,
+      userId,
+      tracks: externalTracks = [],
+      isPublic,
+    } = req.body;
+
+    if (!name || !userId || !Array.isArray(externalTracks)) {
+      return res
+        .status(400)
+        .json({ error: "name, userId and tracks[] required" });
+    }
+
+    // Create or find tracks
+    const createdTrackIds = [];
+    for (const t of externalTracks) {
+      // Required fields for each track: title, artist, url
+      if (!t.title || !t.artist || !t.url) continue;
+
+      // Try to find existing track by exact url
+      let track = await Track.findOne({ url: t.url });
+      if (!track) {
+        track = new Track({
+          title: t.title,
+          artist: t.artist,
+          album: t.album || "",
+          duration: t.duration || 0,
+          url: t.url,
+          previewUrl: t.previewUrl || t.url,
+          image: t.image || "",
+          genre: t.genre || "",
+        });
+        await track.save();
+      }
+      createdTrackIds.push(track._id);
+    }
+
+    // Create playlist
+    const playlist = new Playlist({
+      name,
+      description: description || "",
+      userId,
+      trackIds: createdTrackIds,
+      isPublic: isPublic || false,
+    });
+
+    await playlist.save();
+    const populated = await Playlist.findById(playlist._id).populate(
+      "trackIds",
+    );
+    res.status(201).json(populated);
+  } catch (err) {
+    console.error("Import playlist error:", err);
+    res.status(500).json({ error: "Failed to import playlist" });
+  }
+});
+
 // ===== TRACK ROUTES =====
 
 // Get all tracks
