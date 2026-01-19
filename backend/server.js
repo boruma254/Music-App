@@ -16,10 +16,10 @@ app.use(
     origin: [
       "http://localhost:3000",
       "https://music-app-swart-three.vercel.app",
-      "music-app.railway.internal",
+      "https://music-app-production-46c1.up.railway.app",
     ],
     credentials: true,
-  })
+  }),
 );
 app.use(express.json());
 
