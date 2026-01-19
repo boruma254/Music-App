@@ -18,7 +18,7 @@ export default function MainContent({
   return (
     <div className="flex-1 overflow-hidden bg-gray-900">
       {activeTab === "home" && <HomeTab audioPlayer={audioPlayer} />}
-      {activeTab === "playlists" && <PlaylistsTab />}
+      {activeTab === "playlists" && <PlaylistsTab audioPlayer={audioPlayer} />}
       {activeTab === "albums" && <AlbumsTab />}
       {activeTab === "artists" && <ArtistsTab />}
       {activeTab === "settings" && <SettingsTab />}
