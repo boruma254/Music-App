@@ -23,9 +23,12 @@ export default function Home() {
     }
   }, []);
 
-  const handleLogin = (name: string) => {
+  const handleLogin = (name: string, userId?: string, isSpotify?: boolean, accessToken?: string) => {
     setUserName(name);
     setIsLoggedIn(true);
+    if (isSpotify && accessToken) {
+      // Spotify login - tokens already stored in localStorage by LoginModal
+    }
   };
 
   const handleLogout = () => {
@@ -34,7 +37,7 @@ export default function Home() {
   };
 
   const handleLogoClick = () => {
-    const tabs = ["home", "albums", "playlists", "artists"];
+    const tabs = ["home", "search", "playlists", "albums", "artists"];
     const currentIndex = tabs.indexOf(activeTab);
     const nextTab = tabs[(currentIndex + 1) % tabs.length];
     setActiveTab(nextTab);

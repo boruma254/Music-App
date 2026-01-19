@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 const connectDB = require("./db");
 const { User, Playlist, Track, Album, Artist } = require("./models");
 
-// const spotifyRoutes = require("./routes/spotify");
+const spotifyRoutes = require("./routes/spotify");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -320,7 +320,7 @@ app.get("/api/artists", async (req, res) => {
 
 // ===== SPOTIFY API ROUTES =====
 
-// app.use("/api/spotify", spotifyRoutes);
+app.use("/api/spotify", spotifyRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {

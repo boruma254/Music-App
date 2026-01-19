@@ -22,6 +22,7 @@ export default function Sidebar({
 
   const tabs = [
     { id: "home", label: "Home", icon: "🏠" },
+    { id: "search", label: "Search", icon: "🔍" },
     { id: "playlists", label: "Playlists", icon: "📋" },
     { id: "albums", label: "Albums", icon: "💿" },
     { id: "artists", label: "Artists", icon: "🎤" },
