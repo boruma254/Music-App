@@ -1,7 +1,7 @@
 "use client";
 
 import HomeTab from "./tabs/HomeTab";
-import SearchTab from "./tabs/SearchTab";
+
 import PlaylistsTab from "./tabs/PlaylistsTab";
 import AlbumsTab from "./tabs/AlbumsTab";
 import ArtistsTab from "./tabs/ArtistsTab";

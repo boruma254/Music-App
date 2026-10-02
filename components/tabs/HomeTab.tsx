@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Playlist, Track } from "@/types";
 import { musicService } from "@/services/musicService";
 import { spotifyService } from "@/services/spotifyService";
-import { youtubeService } from "@/services/youtubeService";
+
 import TrackListItem from "../TrackListItem";
 
 interface HomeTabProps {
@@ -18,7 +18,7 @@ export default function HomeTab({ audioPlayer }: HomeTabProps) {
   );
   const [tracks, setTracks] = useState<Track[]>([]);
   const [isSpotifyMode, setIsSpotifyMode] = useState(false);
-  const [isYouTubeMode, setIsYouTubeMode] = useState(false);
+  
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
