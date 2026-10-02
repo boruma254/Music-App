@@ -1,10 +1,10 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
 import { Playlist, Track } from "@/types";
 import { musicService } from "@/services/musicService";
 import { spotifyService } from "@/services/spotifyService";
-
 import TrackListItem from "../TrackListItem";
 
 interface HomeTabProps {
@@ -18,7 +18,6 @@ export default function HomeTab({ audioPlayer }: HomeTabProps) {
   );
   const [tracks, setTracks] = useState<Track[]>([]);
   const [isSpotifyMode, setIsSpotifyMode] = useState(false);
-  
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -30,14 +29,16 @@ export default function HomeTab({ audioPlayer }: HomeTabProps) {
 
     try {
       const spotifyToken = spotifyService.getStoredAccessToken();
+
+      // Spotify mode
       if (spotifyToken) {
         setIsSpotifyMode(true);
-        setIsYouTubeMode(false);
 
         const spotifyPlaylists = await spotifyService.getPlaylists(
           spotifyToken,
           50,
         );
+
         const formatted: Playlist[] = spotifyPlaylists.map((p: any) => ({
           id: p.id,
           name: p.name,
@@ -46,6 +47,7 @@ export default function HomeTab({ audioPlayer }: HomeTabProps) {
         }));
 
         setPlaylists(formatted);
+
         if (formatted.length > 0) {
           setSelectedPlaylist(formatted[0]);
           await loadPlaylistTracks(formatted[0].id, true);
@@ -57,67 +59,96 @@ export default function HomeTab({ audioPlayer }: HomeTabProps) {
         return;
       }
 
-      // Load YouTube trending videos as default playlists
-      setIsYouTubeMode(true);
+      // Local music mode
       setIsSpotifyMode(false);
-      const trendingVideos = await youtubeService.getTrendingVideos(20);
-      const trendingPlaylist: Playlist = {
-        id: "youtube-trending",
-        name: "Trending on YouTube",
-        description: "Popular music videos from YouTube",
-        tracks: trendingVideos.length,
-      };
-      setPlaylists([trendingPlaylist]);
-      setSelectedPlaylist(trendingPlaylist);
-      setTracks(
-        trendingVideos.map((v: any) => ({
-          id: v.id,
-          name: v.title,
-          artist: v.artist,
-          duration: 0,
-          url: `https://www.youtube.com/embed/${v.id}`,
-        })),
-      );
-    } catch (err) {
-      console.error("Error loading playlists:", err);
-      // Fallback to local music
-      setIsYouTubeMode(false);
-      setIsSpotifyMode(false);
+
       const userId = localStorage.getItem("currentUserId");
+
       const data = await musicService.getPlaylists(userId || undefined);
+
       setPlaylists(data);
+
       if (data.length > 0) {
         setSelectedPlaylist(data[0]);
         await loadPlaylistTracks(data[0].id, false);
+      } else {
+        setSelectedPlaylist(null);
+        setTracks([]);
+      }
+    } catch (err) {
+      console.error("Error loading playlists:", err);
+
+      // Fallback to local music if Spotify fails
+      setIsSpotifyMode(false);
+
+      try {
+        const userId = localStorage.getItem("currentUserId");
+
+        const data = await musicService.getPlaylists(userId || undefined);
+
+        setPlaylists(data);
+
+        if (data.length > 0) {
+          setSelectedPlaylist(data[0]);
+          await loadPlaylistTracks(data[0].id, false);
+        } else {
+          setSelectedPlaylist(null);
+          setTracks([]);
+        }
+      } catch (fallbackError) {
+        console.error(
+          "Error loading local playlists:",
+          fallbackError,
+        );
+
+        setPlaylists([]);
+        setSelectedPlaylist(null);
+        setTracks([]);
       }
     } finally {
       setLoading(false);
     }
   };
 
-  const loadPlaylistTracks = async (playlistId: string, isSpotify: boolean) => {
+  const loadPlaylistTracks = async (
+    playlistId: string,
+    isSpotify: boolean,
+  ) => {
     try {
       if (isSpotify) {
         const spotifyToken = spotifyService.getStoredAccessToken();
-        if (!spotifyToken) return;
+
+        if (!spotifyToken) {
+          setTracks([]);
+          return;
+        }
 
         const spotifyTracks = await spotifyService.getPlaylistTracks(
           spotifyToken,
           playlistId,
           50,
         );
+
         const formattedTracks: Track[] = spotifyTracks.map((t: any) => ({
           id: t.track?.id || t.id,
           name: t.track?.name || t.name,
-          artist: t.track?.artists?.[0]?.name || t.artist || "Unknown",
+          artist:
+            t.track?.artists?.[0]?.name ||
+            t.artist ||
+            "Unknown",
           duration: Math.floor(
             (t.track?.duration_ms || t.duration || 0) / 1000,
           ),
-          url: t.track?.preview_url || t.preview_url || t.url,
+          url:
+            t.track?.preview_url ||
+            t.preview_url ||
+            t.url,
         }));
+
         setTracks(formattedTracks);
       } else {
         const data = await musicService.getPlaylistTracks(playlistId);
+
         setTracks(data);
       }
     } catch (err) {
@@ -138,7 +169,9 @@ export default function HomeTab({ audioPlayer }: HomeTabProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-gray-400">Loading playlists...</div>
+        <div className="text-gray-400">
+          Loading playlists...
+        </div>
       </div>
     );
   }
@@ -146,7 +179,8 @@ export default function HomeTab({ audioPlayer }: HomeTabProps) {
   return (
     <div className="overflow-auto h-full">
       <div className="p-8">
-        {/* Source Indicator */}
+
+        {/* Spotify connection indicator */}
         {isSpotifyMode && (
           <div className="mb-4 p-3 bg-green-900/30 border border-green-700 rounded-lg flex items-center gap-2">
             <svg
@@ -156,54 +190,81 @@ export default function HomeTab({ audioPlayer }: HomeTabProps) {
             >
               <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.56.3z" />
             </svg>
-            <span className="text-sm text-green-400">Connected to Spotify</span>
+
+            <span className="text-sm text-green-400">
+              Connected to Spotify
+            </span>
           </div>
         )}
 
-        {/* Last Updated Playlists Section */}
+        {/* Playlists */}
         <section className="mb-12">
           <h2 className="text-3xl font-bold mb-6">
             {isSpotifyMode
               ? "Your Spotify Playlists"
               : "Last Updated Playlists"}
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {playlists.map((playlist) => (
-              <div
-                key={playlist.id}
-                onClick={() => handleSelectPlaylist(playlist)}
-                className={`p-4 rounded-lg border transition cursor-pointer ${
-                  selectedPlaylist?.id === playlist.id
-                    ? "bg-gradient-to-br from-purple-600 to-blue-600 border-purple-400"
-                    : "bg-gray-800 border-gray-700 hover:border-purple-500"
-                }`}
-              >
-                <h3 className="font-semibold text-lg">{playlist.name}</h3>
-                <p className="text-sm text-gray-300 mt-1">
-                  {playlist.description}
-                </p>
-                <p className="text-xs text-gray-400 mt-2">
-                  {playlist.tracks} tracks
-                </p>
-              </div>
-            ))}
-          </div>
+
+          {playlists.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {playlists.map((playlist) => (
+                <div
+                  key={playlist.id}
+                  onClick={() =>
+                    handleSelectPlaylist(playlist)
+                  }
+                  className={`p-4 rounded-lg border transition cursor-pointer ${
+                    selectedPlaylist?.id === playlist.id
+                      ? "bg-gradient-to-br from-purple-600 to-blue-600 border-purple-400"
+                      : "bg-gray-800 border-gray-700 hover:border-purple-500"
+                  }`}
+                >
+                  <h3 className="font-semibold text-lg">
+                    {playlist.name}
+                  </h3>
+
+                  <p className="text-sm text-gray-300 mt-1">
+                    {playlist.description}
+                  </p>
+
+                  <p className="text-xs text-gray-400 mt-2">
+                    {playlist.tracks} tracks
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
+              <p className="text-gray-400">
+                No playlists available.
+              </p>
+            </div>
+          )}
         </section>
 
-        {/* Playboard Section */}
+        {/* Now Playing */}
         <section>
-          <h2 className="text-3xl font-bold mb-6">Now Playing</h2>
+          <h2 className="text-3xl font-bold mb-6">
+            Now Playing
+          </h2>
+
           {selectedPlaylist ? (
             <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
               <div className="mb-6">
                 <h3 className="text-2xl font-bold mb-2">
                   {selectedPlaylist.name}
                 </h3>
-                <p className="text-gray-400">{selectedPlaylist.description}</p>
+
+                <p className="text-gray-400">
+                  {selectedPlaylist.description}
+                </p>
               </div>
 
               <div className="space-y-2">
-                <h4 className="text-lg font-semibold mb-4">Track List</h4>
+                <h4 className="text-lg font-semibold mb-4">
+                  Track List
+                </h4>
+
                 {tracks.length > 0 ? (
                   <div className="space-y-2 max-h-64 overflow-y-auto">
                     {tracks.map((track, index) => (
@@ -213,19 +274,26 @@ export default function HomeTab({ audioPlayer }: HomeTabProps) {
                         index={index}
                         isPlaying={audioPlayer.isPlaying}
                         isCurrentTrack={
-                          audioPlayer.currentTrack?.id === track.id
+                          audioPlayer.currentTrack?.id ===
+                          track.id
                         }
-                        onPlay={() => handlePlayTrack(track)}
+                        onPlay={() =>
+                          handlePlayTrack(track)
+                        }
                       />
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-400">No tracks available</p>
+                  <p className="text-gray-400">
+                    No tracks available
+                  </p>
                 )}
               </div>
             </div>
           ) : (
-            <p className="text-gray-400">Select a playlist to view tracks</p>
+            <p className="text-gray-400">
+              Select a playlist to view tracks
+            </p>
           )}
         </section>
       </div>

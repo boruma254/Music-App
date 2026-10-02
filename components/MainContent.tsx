@@ -1,7 +1,7 @@
 "use client";
 
 import HomeTab from "./tabs/HomeTab";
-
+import SearchTab from "./tabs/SearchTab";
 import PlaylistsTab from "./tabs/PlaylistsTab";
 import AlbumsTab from "./tabs/AlbumsTab";
 import ArtistsTab from "./tabs/ArtistsTab";
@@ -20,7 +20,9 @@ export default function MainContent({
     <div className="flex-1 overflow-hidden bg-gray-900">
       {activeTab === "home" && <HomeTab audioPlayer={audioPlayer} />}
       {activeTab === "search" && <SearchTab audioPlayer={audioPlayer} />}
-      {activeTab === "playlists" && <PlaylistsTab audioPlayer={audioPlayer} />}
+      {activeTab === "playlists" && (
+        <PlaylistsTab audioPlayer={audioPlayer} />
+      )}
       {activeTab === "albums" && <AlbumsTab />}
       {activeTab === "artists" && <ArtistsTab />}
       {activeTab === "settings" && <SettingsTab />}
