@@ -12,8 +12,13 @@ export const spotifyService = {
   async getAuthorizationUrl() {
     const response = await fetch(`${API_URL}/api/spotify/auth-url`);
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: "Failed to get auth URL" }));
-      throw new Error(error.error || "Failed to get auth URL. Make sure Spotify credentials are configured.");
+      const error = await response
+        .json()
+        .catch(() => ({ error: "Failed to get auth URL" }));
+      throw new Error(
+        error.error ||
+          "Failed to get auth URL. Make sure Spotify credentials are configured.",
+      );
     }
     return response.json();
   },
@@ -33,6 +38,7 @@ export const spotifyService = {
     const data = await response.json();
 
     // Store tokens in localStorage
+   
     localStorage.setItem("spotifyAccessToken", data.accessToken);
     localStorage.setItem("spotifyRefreshToken", data.refreshToken);
 
